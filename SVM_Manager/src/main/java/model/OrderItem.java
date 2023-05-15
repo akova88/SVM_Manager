@@ -15,9 +15,14 @@ public class OrderItem implements IModel<OrderItem>{
         this.price = price;
     }
 
+    public OrderItem() {
+    }
+
+
     @Override
     public String toString() {
-        return String.format("%s, %s, %s, %s, %s", this.idOrderItem, this.idOrder, this.idProduct);
+        return String.format("%s,%s,%s,%s,%s",
+                this.idOrderItem, this.idOrder, this.idProduct, this.quantity, this.price);
     }
 
     public long getIdOrderItem() {
@@ -58,5 +63,15 @@ public class OrderItem implements IModel<OrderItem>{
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    @Override
+    public void parseData(String line) {
+        String[] items = line.split(",");
+        this.idOrderItem = Long.parseLong(items[0]);
+        this.idOrder = Long.parseLong(items[1]);
+        this.idProduct = Long.parseLong(items[2]);
+        this.quantity = Integer.parseInt(items[3]);
+        this.price = Float.parseFloat(items[4]);
     }
 }

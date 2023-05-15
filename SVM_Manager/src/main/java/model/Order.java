@@ -3,11 +3,25 @@ package model;
 import utils.DateUtils;
 
 import java.util.Date;
+import java.util.List;
 
 public class Order implements IModel<Order>{
     private long idOder;
     private Date createAt;
     private float total;
+    public List<OrderItem> orderItems;
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public Order() {
+    }
+
     public Order(long idOder, Date createAt, float total) {
         this.idOder = idOder;
         this.createAt = createAt;
@@ -16,7 +30,7 @@ public class Order implements IModel<Order>{
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s", this.idOder, this.createAt, this.total);
+        return String.format("%s,%s,%s", this.idOder, DateUtils.format(this.createAt), this.total);
     }
 
     public long getIdOder() {
@@ -43,6 +57,12 @@ public class Order implements IModel<Order>{
         this.total = total;
     }
 
+    public void updateTotal() {
+        this.total = 0;
+        for (OrderItem orderItem : orderItems) {
+            this.total += orderItem.getPrice()* orderItem.getQuantity();
+        }
+    }
     @Override
     public void parseData(String line) {
         String[] items = line.split(",");

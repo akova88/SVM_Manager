@@ -5,7 +5,7 @@ import utils.DateUtils;
 import java.util.Date;
 
 public class Product implements IModel<Product>{
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private float price;

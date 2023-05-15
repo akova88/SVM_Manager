@@ -3,6 +3,7 @@ package model;
 import utils.DateUtils;
 
 import java.util.Date;
+import java.util.List;
 
 public class Inventory implements IModel<Inventory> {
     private long idInventory;
@@ -12,6 +13,16 @@ public class Inventory implements IModel<Inventory> {
     private int quantitySold;
     private float priceImport;
     private float priceSale;
+
+    private List<InventoryItems> inventoryItems;
+
+    public List<InventoryItems> getInventoryItems() {
+        return inventoryItems;
+    }
+
+    public void setInventoryItems(List<InventoryItems> inventoryItems) {
+        this.inventoryItems = inventoryItems;
+    }
 
     public Inventory() {
     }
@@ -33,6 +44,14 @@ public class Inventory implements IModel<Inventory> {
 
     public void setIdInventory(long idInventory) {
         this.idInventory = idInventory;
+    }
+
+    public long getIdVm() {
+        return idVm;
+    }
+
+    public void setIdVm(long idVm) {
+        this.idVm = idVm;
     }
 
     public Date getDateImport() {
