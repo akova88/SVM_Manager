@@ -30,7 +30,7 @@ public class OrderServiceInFile implements IOrderService{
     public Order findOrder(long idOrder) {
         List<Order> list = findAllOrder();
         for (Order order : list) {
-            if (order.getIdOder() == idOrder) {
+            if (order.getIdOrder() == idOrder) {
                 return order;
             }
         }

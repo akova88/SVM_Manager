@@ -1,13 +1,10 @@
 package view;
 
-import model.Order;
-import model.OrderItem;
-import model.Product;
+import model.*;
 import service.IOrderService;
 import service.OrderServiceInFile;
 import service.ProductServiceInFile;
 import utils.DateUtils;
-import utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,9 +12,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class OrderView {
-    private Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
     private IOrderService orderServiceInFile;
-    private ProductServiceInFile productService;
+    private static ProductServiceInFile productService;
 
     public OrderView() {
         orderServiceInFile = new OrderServiceInFile();
@@ -45,7 +42,12 @@ public class OrderView {
     }
     private void createOrder() {
         Order order = new Order();
-        order.setIdOder(System.currentTimeMillis() / 1000);
+        order.setIdOrder(System.currentTimeMillis() / 1000);
+
+        InventoryView inventoryView = new InventoryView();
+        VendingMachine vendingMachine = inventoryView.inputIdVm();
+        order.setIdVm(vendingMachine.getIdVm());
+
         boolean checkContinueAddOrderItem = false;
         do{
             Product product = inputIdProduct();
@@ -55,7 +57,7 @@ public class OrderView {
             if (order.getOrderItems() == null) {
                 List<OrderItem> orderItems = new ArrayList<>();
                 OrderItem orderItem = new OrderItem(System.currentTimeMillis() % 1000,
-                        order.getIdOder(), product.getId(), quantity, product.getPrice());
+                        order.getIdOrder(), product.getId(), quantity, product.getPrice());
                 orderItems.add(orderItem);
                 order.setOrderItems(orderItems);
             } else {
@@ -63,11 +65,12 @@ public class OrderView {
                     for (OrderItem orderItem : order.getOrderItems()) {
                         if (orderItem.getIdProduct() == product.getId()) {
                             orderItem.setQuantity(quantity);
+
                         }
                     }
                 } else {
                     OrderItem orderItem = new OrderItem(System.currentTimeMillis() % 1000,
-                            order.getIdOder(), product.getId(), quantity, product.getPrice());
+                            order.getIdOrder(), product.getId(), quantity, product.getPrice());
                     order.getOrderItems().add(orderItem);
                 }
             }
@@ -91,6 +94,7 @@ public class OrderView {
         order.updateTotal();
         order.setCreateAt(new Date());
         orderServiceInFile.createOrder(order);
+
         System.out.println("Tao order thanh cong");
     }
 
@@ -107,7 +111,7 @@ public class OrderView {
         return false;
     }
 
-    private Product inputIdProduct() {
+    static Product inputIdProduct() {
         Product product = null;
         boolean checkEditProductValid = false;
         do{
@@ -146,7 +150,8 @@ public class OrderView {
         long idOrder = Long.parseLong(scanner.nextLine());
         Order order = orderServiceInFile.findOrder(idOrder);
         if (order != null) {
-            System.out.printf("%-15s%-15s\n","ID ORDER", order.getIdOder());
+            System.out.printf("%-30s%-10s\n","ID VENDING MACHINE", order.getIdVm());
+            System.out.printf("%-30s%-10s\n","ID ORDER", order.getIdOrder());
             System.out.printf("%-10s%-10s%-10s%-10s\n","Name", "Quantity", "Price","TotalItem");
             for (OrderItem orderItem : order.getOrderItems()) {
                 if (orderItem.getIdOrder() == idOrder) {
@@ -164,7 +169,7 @@ public class OrderView {
     private void showOrders(List<Order> allOrder) {
         System.out.printf("%-15s | %-20s | %-10s\n", "ID", "CREATE AT", "TOTAL");
         for (Order order : allOrder) {
-            System.out.printf("%-15s | %-20s | %-10s\n",order.getIdOder(), DateUtils.format(order.getCreateAt()),order.getTotal());
+            System.out.printf("%-15s | %-20s | %-10s\n",order.getIdOrder(), DateUtils.format(order.getCreateAt()),order.getTotal());
         }
     }
 }
