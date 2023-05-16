@@ -94,8 +94,8 @@ public class OrderView {
         order.updateTotal();
         order.setCreateAt(new Date());
         orderServiceInFile.createOrder(order);
-
         System.out.println("Tao order thanh cong");
+
     }
 
     private boolean checkProductExistOrder(Order order, Product product) {

@@ -1,5 +1,7 @@
 package service;
 
+import model.Inventory;
+import model.InventoryItems;
 import model.Order;
 import model.OrderItem;
 import utils.FileUtils;
@@ -25,6 +27,28 @@ public class OrderItemServiceInFile implements IOrderItemService{
     public void saveOrderItemByOrder(Order order) {
         List<OrderItem> orderItems = findAllOrderItem();
         orderItems.addAll(order.getOrderItems());
+
+        InventoryItemService inventoryItemService = new InventoryItemService();
+        InventoryService inventoryService = new InventoryService();
+        List<InventoryItems> items = inventoryItemService.findAllInventoryItem();
+        List<Inventory> inventories = inventoryService.findAllInventory();
+
+        for (OrderItem orderItem : order.getOrderItems()){
+            for(InventoryItems item : items ){
+                for(Inventory inventory : inventories){
+                    if( inventory.getIdVm() == order.getIdVm() &&
+                            inventory.getIdInventory() == item.getIdInventory() &&
+                            item.getQuantityPut() != item.getQuantitySold() &&
+                            item.getIdProduct() == orderItem.getIdProduct()){
+                        inventory.setQuantitySold(inventory.getQuantitySold() + orderItem.getQuantity());
+                        item.setQuantitySold(item.getQuantitySold() + orderItem.getQuantity());
+                        break;
+                    }
+                }
+            }
+        }
+        inventoryService.saveInventory(inventories);
+        inventoryItemService.saveInventory(items);
         FileUtils.writeFile(path, orderItems);
     }
 }

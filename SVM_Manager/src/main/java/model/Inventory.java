@@ -1,5 +1,6 @@
 package model;
 
+import service.ProductServiceInFile;
 import utils.DateUtils;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ public class Inventory implements IModel<Inventory> {
     private float priceSale;
 
     private List<InventoryItems> inventoryItems;
+    private ProductServiceInFile productServiceInFile;
 
     public List<InventoryItems> getInventoryItems() {
         return inventoryItems;
@@ -25,6 +27,7 @@ public class Inventory implements IModel<Inventory> {
     }
 
     public Inventory() {
+        productServiceInFile = new ProductServiceInFile();
     }
 
     public Inventory(long idInventory, long idVm, Date dateImport, int quantityProduct,
@@ -93,11 +96,38 @@ public class Inventory implements IModel<Inventory> {
     public void setPriceSale(float priceSale) {
         this.priceSale = priceSale;
     }
+    public void updateQuantityImport() {
+        this.quantityProduct = 0;
+        for (InventoryItems item : inventoryItems) {
+            this.quantityProduct += item.getQuantityPut();
+        }
+    }
+    public void updateQuantityProductSold() {
+        this.quantitySold = 0;
+        for (InventoryItems inventoryItem : inventoryItems) {
+            this.quantitySold += inventoryItem.getQuantitySold();
+        }
+    }
+
+    public void updatePriceImport() {
+        this.priceImport = 0;
+        for (InventoryItems inventoryItem : inventoryItems) {
+            float price = productServiceInFile.findProduct(inventoryItem.getIdProduct()).getPrice();
+            priceImport = inventoryItem.getQuantityPut()* price;
+        }
+    }
+    public void updatePriceSold() {
+        this.priceSale = 0;
+        for (InventoryItems inventoryItem : inventoryItems) {
+            float price = productServiceInFile.findProduct(inventoryItem.getIdProduct()).getPrice();
+            priceImport = inventoryItem.getQuantitySold()* price;
+        }
+    }
 
     @Override
     public String toString() {
 //        idInventory, idVm, dateImport, quantityProduct, quantitySold, priceImport, priceSale
-        return String.format("%s,%s,%s,%s,%s,%s,%s", this.idInventory, this.idVm, this.dateImport,
+        return String.format("%s,%s,%s,%s,%s,%s,%s", this.idInventory, this.idVm, DateUtils.format(this.dateImport),
                 this.quantityProduct, this.quantitySold, this.priceImport, this.priceSale);
     }
 

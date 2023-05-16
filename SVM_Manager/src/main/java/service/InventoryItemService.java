@@ -25,5 +25,9 @@ public class InventoryItemService {
     public void saveInventoryItemByInventory(Inventory inventory) {
         List<InventoryItems> list = findAllInventoryItem();
         list.addAll(inventory.getInventoryItems());
+        FileUtils.writeFile(path,list);
+    }
+    public void saveInventory(List<InventoryItems> inventoryItems){
+        FileUtils.writeFile(path,inventoryItems);
     }
 }

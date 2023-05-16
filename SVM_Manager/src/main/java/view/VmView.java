@@ -36,20 +36,22 @@ public class VmView {
         System.out.println("New Vending Machine");
         System.out.println("Nhập tên máy:");
         String nameNew = scanner.nextLine();
+        System.out.println("Nhập sức chưa sản phẩm của máy:");
+        int capacity = Integer.parseInt(scanner.nextLine());
         System.out.println("Nhập địa chỉ đặt máy:");
         String address = scanner.nextLine();
         System.out.println("Nhập số tiền có sẵn trong máy:");
         float priceNew = Float.parseFloat(scanner.nextLine());
 
-        VendingMachine vendingMachineNew = new VendingMachine(System.currentTimeMillis() / 10000,nameNew,address,priceNew);
+        VendingMachine vendingMachineNew = new VendingMachine(System.currentTimeMillis() / 10000,nameNew,capacity,address,priceNew);
         vmService.addVendingMachine(vendingMachineNew);
     }
 
     private void showVendingMachine(List<VendingMachine> allVendingMachine) {
-//        long idVm, String nameVm, String address, float currentBalance
-        System.out.printf("%-15s %-20s %-20s %-10s\n", "ID_VM", "Name_VM", "ADDRESS", "currentBalance");
+//        long idVm, String nameVm, int capacity, String address, float currentBalance
+        System.out.printf("%-15s %-20s %-10s %-20s %-10s\n", "ID_VM", "Name_VM","CAPACITY", "ADDRESS", "currentBalance");
         for (VendingMachine vm : allVendingMachine) {
-            System.out.printf("%-15s %-20s %-20s %-10s\n", vm.getIdVm(), vm.getNameVm(), vm.getAddress(),
+            System.out.printf("%-15s %-20s %-10s %-20s %-10s\n", vm.getIdVm(), vm.getNameVm(),vm.getCapacity(), vm.getAddress(),
                     vm.getCurrentBalance());
         }
     }

@@ -1,3 +1,4 @@
+import view.InventoryView;
 import view.OrderView;
 import view.ProductView;
 import view.VmView;
@@ -13,5 +14,7 @@ public class Main {
         OrderView orderView = new OrderView();
         orderView.launcher();
 
+//        InventoryView inventoryView = new InventoryView();
+//        inventoryView.launcher();
     }
 }
