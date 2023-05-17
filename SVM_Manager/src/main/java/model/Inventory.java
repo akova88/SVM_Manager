@@ -1,5 +1,7 @@
 package model;
 
+import service.InventoryItemService;
+import service.InventoryService;
 import service.ProductServiceInFile;
 import utils.DateUtils;
 
@@ -17,7 +19,7 @@ public class Inventory implements IModel<Inventory> {
 
     private List<InventoryItems> inventoryItems;
     private ProductServiceInFile productServiceInFile;
-
+    private InventoryItemService inventoryItemService;
     public List<InventoryItems> getInventoryItems() {
         return inventoryItems;
     }
@@ -28,6 +30,7 @@ public class Inventory implements IModel<Inventory> {
 
     public Inventory() {
         productServiceInFile = new ProductServiceInFile();
+        inventoryItemService = new InventoryItemService();
     }
 
     public Inventory(long idInventory, long idVm, Date dateImport, int quantityProduct,
@@ -111,16 +114,10 @@ public class Inventory implements IModel<Inventory> {
 
     public void updatePriceImport() {
         this.priceImport = 0;
+
         for (InventoryItems inventoryItem : inventoryItems) {
-            float price = productServiceInFile.findProduct(inventoryItem.getIdProduct()).getPrice();
-            priceImport = inventoryItem.getQuantityPut()* price;
-        }
-    }
-    public void updatePriceSold() {
-        this.priceSale = 0;
-        for (InventoryItems inventoryItem : inventoryItems) {
-            float price = productServiceInFile.findProduct(inventoryItem.getIdProduct()).getPrice();
-            priceImport = inventoryItem.getQuantitySold()* price;
+            priceImport += inventoryItem.getQuantityPut()*
+                    productServiceInFile.findProduct(inventoryItem.getIdProduct()).getPrice();
         }
     }
 

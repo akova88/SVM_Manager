@@ -41,6 +41,10 @@ public class OrderItemServiceInFile implements IOrderItemService{
                             item.getQuantityPut() != item.getQuantitySold() &&
                             item.getIdProduct() == orderItem.getIdProduct()){
                         inventory.setQuantitySold(inventory.getQuantitySold() + orderItem.getQuantity());
+
+                        inventory.setPriceSale(inventory.getPriceSale()+ orderItem.getQuantity()*
+                                orderItem.getPrice());
+
                         item.setQuantitySold(item.getQuantitySold() + orderItem.getQuantity());
                         break;
                     }

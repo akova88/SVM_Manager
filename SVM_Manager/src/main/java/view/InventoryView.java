@@ -40,11 +40,36 @@ public class InventoryView {
                 case 2:
                     createInventory();
                     break;
-//                case 3:
-//                    showOrderDetail();
-//                    break;
+                case 3:
+                    showInventoryDetail();
+                    break;
             }
         } while (true);
+    }
+
+    private void showInventoryDetail() {
+        System.out.println("Nhập mã Inventory cần xem:");
+        long idInventory = Long.parseLong(scanner.nextLine());
+        Inventory inventory = inventoryService.findInventory(idInventory);
+
+                System.out.printf("%-55s%-15s\n","ID VENDING MACHINE", inventory.getIdVm());
+                VendingMachine vendingMachine = vmService.findVm(inventory.getIdVm());
+                System.out.printf("%-55s%-15s\n","NAME VENDING MACHINE", vendingMachine.getNameVm());
+                System.out.printf("%-55s%-15s\n","ID INVENTORY", inventory.getIdInventory());
+//                "%s,%s,%s,%s,%s", this.idInventoryItems, this.idInventory,
+//                        this.idProduct, this.quantityPut, this.quantitySold
+
+                System.out.printf("%-20s%-20s%-15s%-15s\n","Id Product","Name", "Quantity_Put", "Quantity_Sold");
+                for (InventoryItems item : inventory.getInventoryItems()) {
+                    if (item.getIdInventory() == idInventory) {
+                        Product p = productService.findProduct(item.getIdProduct());
+                        System.out.printf("%-20s%-20s%-15s%-15s\n", p.getId(), p.getName(), item.getQuantityPut(),
+                                item.getQuantitySold());
+                    }
+                }
+
+
+
     }
 
     private void createInventory() {
@@ -94,10 +119,8 @@ public class InventoryView {
                 break;
         }
     } while (checkContinueAddInventoryItem);
-        inventory.updateQuantityImport();
-        inventory.updateQuantityProductSold();
         inventory.updatePriceImport();
-        inventory.updatePriceSold();
+        inventory.updateQuantityImport();
         inventory.setDateImport(new Date());
         inventoryService.createInventory(inventory);
         System.out.println("Tạo Inventory thành công!");

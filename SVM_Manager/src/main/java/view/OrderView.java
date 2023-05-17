@@ -1,9 +1,7 @@
 package view;
 
 import model.*;
-import service.IOrderService;
-import service.OrderServiceInFile;
-import service.ProductServiceInFile;
+import service.*;
 import utils.DateUtils;
 
 import java.util.ArrayList;
@@ -15,10 +13,14 @@ public class OrderView {
     private static Scanner scanner = new Scanner(System.in);
     private IOrderService orderServiceInFile;
     private static ProductServiceInFile productService;
+    private InventoryService inventoryService;
+    private InventoryItemService inventoryItemService;
 
     public OrderView() {
         orderServiceInFile = new OrderServiceInFile();
         productService = new ProductServiceInFile();
+        inventoryService = new InventoryService();
+        inventoryItemService = new InventoryItemService();
     }
     public void launcher() {
         do{
@@ -42,7 +44,8 @@ public class OrderView {
     }
     private void createOrder() {
         Order order = new Order();
-        order.setIdOrder(System.currentTimeMillis() / 1000);
+        long idOrder = System.currentTimeMillis() % 1000;
+        order.setIdOrder(idOrder);
 
         InventoryView inventoryView = new InventoryView();
         VendingMachine vendingMachine = inventoryView.inputIdVm();
@@ -50,9 +53,14 @@ public class OrderView {
 
         boolean checkContinueAddOrderItem = false;
         do{
+            showVmToBuy(vendingMachine); // Hiện máy bán hàng để khách chọn mua
+
             Product product = inputIdProduct();
             System.out.println("Nhập số lượng: ");
             int quantity = Integer.parseInt(scanner.nextLine());
+            if (!checkQuantity(vendingMachine, quantity, product)) {
+                System.out.println("Nhập lại, quá số lượng có trong máy");
+            }
 
             if (order.getOrderItems() == null) {
                 List<OrderItem> orderItems = new ArrayList<>();
@@ -95,7 +103,32 @@ public class OrderView {
         order.setCreateAt(new Date());
         orderServiceInFile.createOrder(order);
         System.out.println("Tao order thanh cong");
+        showOrderBill(idOrder,order);
+    }
 
+    public boolean checkQuantity(VendingMachine vendingMachine, int quantity, Product product) {
+
+        List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
+        List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
+        for (InventoryItems item : inventoryItemsList) {
+            if( quantity > (item.getQuantityPut() - item.getQuantitySold()) && item.getIdProduct() == product.getId())
+                return true;
+        }
+        return false;
+    }
+
+    private void showVmToBuy(VendingMachine vendingMachine) {
+        List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
+        List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
+        System.out.println("VENDING MACHINE " + vendingMachine.getNameVm() + " XIN CHÀO QUÝ KHÁCH");
+        System.out.printf("%-10s%-20s%-10s%-10s\n","ID", "Name", "Quantity", "Price");
+        for (InventoryItems item : inventoryItemsList) {
+            String nameProductShowChoose = productService.findProduct(item.getIdProduct()).getName();
+            float priceProductChoose = productService.findProduct(item.getIdProduct()).getPrice();
+            System.out.printf("%-10s%-20s%-10s%-10s\n", item.getIdProduct(), nameProductShowChoose,
+                    item.getQuantityPut()- item.getQuantitySold(),priceProductChoose );
+         }
+        System.out.printf("%-10s","PLEASE CHOOSE ID PRODUCT TO BUY\n");
     }
 
     private boolean checkProductExistOrder(Order order, Product product) {
@@ -150,20 +183,35 @@ public class OrderView {
         long idOrder = Long.parseLong(scanner.nextLine());
         Order order = orderServiceInFile.findOrder(idOrder);
         if (order != null) {
-            System.out.printf("%-30s%-10s\n","ID VENDING MACHINE", order.getIdVm());
-            System.out.printf("%-30s%-10s\n","ID ORDER", order.getIdOrder());
-            System.out.printf("%-10s%-10s%-10s%-10s\n","Name", "Quantity", "Price","TotalItem");
-            for (OrderItem orderItem : order.getOrderItems()) {
-                if (orderItem.getIdOrder() == idOrder) {
-                    Product p = productService.findProduct(orderItem.getIdProduct());
-                    System.out.printf("%-10s%-10s%-10s%-10s\n", p.getName(), orderItem.getQuantity(), orderItem.getPrice(),
-                            orderItem.getQuantity()*orderItem.getPrice());
-                }
-            }
-            System.out.printf("%-30s%-10s\n", "Tổng tiền: ", order.getTotal());
+            showOrderBill(idOrder, order);
         } else {
             System.out.println("Không tìm thấy order");
         }
+    }
+
+    private static void showOrderBill(long idOrder, Order order) {
+        System.out.println("+--------------------------------------------------------------+");
+        System.out.printf("| %-60s |\n", "ID VENDING MACHINE");
+        System.out.printf("| %-60d |\n", order.getIdVm());
+        System.out.printf("| %-60s |\n", "ID ORDER");
+        System.out.printf("| %-60d |\n", order.getIdOrder());
+        System.out.println("|--------------------------------------------------------------|");
+        // In tiêu đề các cột
+        System.out.printf("| %-20s | %-10s | %-10s | %-11s |\n", "Name", "Quantity", "Price", "TotalItem");
+        // Vẽ border giữa
+        System.out.println("|--------------------------------------------------------------|");
+        for (OrderItem orderItem : order.getOrderItems()) {
+            if (orderItem.getIdOrder() == idOrder) {
+                Product p = productService.findProduct(orderItem.getIdProduct());
+                System.out.printf("| %-20s | %-10d | %-10s | %-11s |\n", p.getName(), orderItem.getQuantity(), orderItem.getPrice(),
+                        orderItem.getQuantity()*orderItem.getPrice());
+                System.out.printf("| %-60s |\n"," ");
+            }
+        }
+        System.out.println("|--------------------------------------------------------------|");
+        System.out.printf("| %-60s |\n", "Tổng tiền:");
+        System.out.printf("| %60s |\n", order.getTotal());
+        System.out.println("+--------------------------------------------------------------+");
     }
 
     private void showOrders(List<Order> allOrder) {

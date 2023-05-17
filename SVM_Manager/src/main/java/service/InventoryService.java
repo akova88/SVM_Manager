@@ -19,6 +19,15 @@ public class InventoryService {
     public List<Inventory> findAllInventory() {
         return FileUtils.readFile(path,Inventory.class);
     }
+    public Inventory findInventory(long idInventory) {
+        List<Inventory> list = findAllInventory();
+        for (Inventory inventory : list) {
+            if (inventory.getIdInventory() == idInventory) {
+                return inventory;
+            }
+        }
+        return null;
+    }
     public List<Inventory> findAllInventoryByIdVm(long idVm) {
         List<Inventory>  list = findAllInventory();
         List<Inventory> result = new ArrayList<>();
