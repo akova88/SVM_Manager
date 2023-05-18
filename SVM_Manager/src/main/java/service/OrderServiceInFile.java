@@ -25,8 +25,8 @@ public class OrderServiceInFile implements IOrderService{
         orderItemServiceInFile.saveOrderItemByOrder(order);
         orders.add(order);
 
-        InventoryService inventoryService = new InventoryService();
-        List<Inventory> items = inventoryService.findAllInventory();
+//        InventoryService inventoryService = new InventoryService();
+//        List<Inventory> items = inventoryService.findAllInventory();
 
 //        for (OrderItem orderItem : order.getOrderItems()){
 //            for (Inventory item : items) {

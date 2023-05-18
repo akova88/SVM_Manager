@@ -2,6 +2,7 @@ package view;
 
 import model.*;
 import service.*;
+import utils.AppUtils;
 import utils.DateUtils;
 
 import java.util.ArrayList;
@@ -23,25 +24,34 @@ public class OrderView {
         inventoryItemService = new InventoryItemService();
     }
     public void launcher() {
-        do{
-            System.out.println("Menu chương trình");
-            System.out.println("Nhập 1: Xem danh sách order");
-            System.out.println("Nhập 2: Thêm order");
-            System.out.println("Nhập 3: Xem chi tiết order");
-            int actionMenu = Integer.parseInt(scanner.nextLine());
-            switch (actionMenu) {
-                case 1:
-                    showOrders(orderServiceInFile.findAllOrder());
-                    break;
-                case 2:
-                    createOrder();
-                    break;
-                case 3:
-                    showOrderDetail();
-                    break;
+        boolean actionMenu = true;
+        while (actionMenu) {
+            try {
+                AppUtils.menuOrderView();
+
+                int input = Integer.parseInt(scanner.nextLine());
+                switch (input) {
+                    case 1:
+                        showOrders(orderServiceInFile.findAllOrder());
+                        break;
+                    case 2:
+                        createOrder();
+                        break;
+                    case 3:
+                        showOrderDetail();
+                        break;
+                    case 0:
+                        actionMenu = false;
+                        break;
+                    default:
+                        System.out.println("Bạn nhập không hợp lệ, Vui lòng nhập lại");
+                }
+            }catch (NumberFormatException numberFormatException) {
+                System.out.println("Định dạng không đúng. Vui lòng nhập lại");
             }
-        } while (true);
+        }
     }
+
     private void createOrder() {
         Order order = new Order();
         long idOrder = System.currentTimeMillis() % 1000;
@@ -58,9 +68,9 @@ public class OrderView {
             Product product = inputIdProduct();
             System.out.println("Nhập số lượng: ");
             int quantity = Integer.parseInt(scanner.nextLine());
-            if (!checkQuantity(vendingMachine, quantity, product)) {
-                System.out.println("Nhập lại, quá số lượng có trong máy");
-            }
+//            if (!checkQuantity(vendingMachine, quantity, product)) {
+//                System.out.println("Nhập lại, quá số lượng có trong máy");
+//            }
 
             if (order.getOrderItems() == null) {
                 List<OrderItem> orderItems = new ArrayList<>();
@@ -106,16 +116,16 @@ public class OrderView {
         showOrderBill(idOrder,order);
     }
 
-    public boolean checkQuantity(VendingMachine vendingMachine, int quantity, Product product) {
-
-        List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
-        List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
-        for (InventoryItems item : inventoryItemsList) {
-            if( quantity > (item.getQuantityPut() - item.getQuantitySold()) && item.getIdProduct() == product.getId())
-                return true;
-        }
-        return false;
-    }
+//    public boolean checkQuantity(VendingMachine vendingMachine, int quantity, Product product) {
+//
+//        List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
+//        List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
+//        for (InventoryItems item : inventoryItemsList) {
+//            if( quantity > (item.getQuantityPut() - item.getQuantitySold()) && item.getIdProduct() == product.getId())
+//                return true;
+//        }
+//        return false;
+//    }
 
     private void showVmToBuy(VendingMachine vendingMachine) {
         List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());

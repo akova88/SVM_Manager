@@ -5,6 +5,7 @@ import model.ECategory;
 import model.Product;
 import service.ProductServiceInFile;
 import service.ProductServiceInMemory;
+import utils.AppUtils;
 import utils.DateUtils;
 
 import javax.swing.*;
@@ -23,52 +24,53 @@ public class ProductView {
 
     }
     public void launch() {
-        do {
-            System.out.println("Menu chương trình: ");
-            System.out.println("Nhập 1: Xem danh sách sản phẩm");
-            System.out.println("Nhập 2: Thêm sản phẩm");
-            System.out.println("Nhập 3: Xoá sản phẩm");
-            System.out.println("Nhập 4: Sửa sản phẩm");
-            System.out.println("Nhập 5: Tìm kiếm sản phẩm");
-            System.out.println("Nhập 6: Sắp xếp sản phẩm");
-            System.out.println("Nhập 9: Hiển thị sản phẩm có phân trang");
+        boolean actionMenu = true;
+        while (actionMenu) {
+            try {
+                AppUtils.menuProductView();
 
-            int actionMenu = Integer.parseInt(scanner.nextLine());
-            switch (actionMenu) {
-                case 1:
-                    showProducts(productService.findAllProducts());
-                    break;
-                case 2:
-                    showCreateProduct();
-                    showProducts(productService.findAllProducts());
-                    System.out.println("Thêm sản phẩm thành công!");
-                    break;
-                case 3:
-                    showProducts(productService.findAllProducts());
-                    Product productToDel = inputIdProduct();
-                    if (productService.removeProduct(productToDel.getId())) {
-                        System.out.println("Xoá thành công!");
-                    } else {
-                        System.out.println("Không tìm thấy sp để xoá");
-                    }
-                    showProducts(productService.findAllProducts());
-                    break;
-                case 4:
-                    showProducts(productService.findAllProducts());
-                    editProduct();
-                    break;
-                case 5:
-                    System.out.println("Tìm kiếm sản phẩm");
-                    fillProduct();
-                    break;
-                case 6:
-                    System.out.println("Sắp xếp sản phẩm");
-                    sortProduct();
-                    break;
-                case 9:
-                    break;
+                int input = Integer.parseInt(scanner.nextLine());
+                switch (input) {
+                    case 1:
+                        showProducts(productService.findAllProducts());
+                        break;
+                    case 2:
+                        showCreateProduct();
+                        showProducts(productService.findAllProducts());
+                        System.out.println("Thêm sản phẩm thành công!");
+                        break;
+                    case 3:
+                        showProducts(productService.findAllProducts());
+                        Product productToDel = inputIdProduct();
+                        if (productService.removeProduct(productToDel.getId())) {
+                            System.out.println("Xoá thành công!");
+                        } else {
+                            System.out.println("Không tìm thấy sp để xoá");
+                        }
+                        showProducts(productService.findAllProducts());
+                        break;
+                    case 4:
+                        showProducts(productService.findAllProducts());
+                        editProduct();
+                        break;
+                    case 5:
+                        System.out.println("Tìm kiếm sản phẩm");
+                        fillProduct();
+                        break;
+                    case 6:
+                        System.out.println("Sắp xếp sản phẩm");
+                        sortProduct();
+                        break;
+                    case 0:
+                        actionMenu = false;
+                        break;
+                    default:
+                        System.out.println("Bạn nhập không hợp lệ, Vui lòng nhập lại");
+                }
+            }catch (NumberFormatException numberFormatException) {
+                System.out.println("Định dạng không đúng. Vui lòng nhập lại");
             }
-        }while (true);
+        }
     }
 
     private void sortProduct() {
@@ -140,14 +142,21 @@ public class ProductView {
     private void fillProduct() {
         boolean checkActionFind = false;
         do {
-            System.out.println("Bạn muốn tìm theo thông tin gì: ");
-            System.out.println("Nhập 1: Tìm theo ID ");
-            System.out.println("Nhập 2: Tìm theo tên ");
-            System.out.println("Nhập 3: Tìm theo mô tả");
-            System.out.println("Nhập 4: Tìm theo giá ");
-            System.out.println("Nhập 5: Tìm theo ngày tạo ");
-            System.out.println("Nhập 6: Tìm theo Category ");
-            System.out.println("Nhập 0: Quay lại");
+            System.out.println("╔═══════════════════════════════════════════════╗");
+            System.out.println("║                                               ║");
+            System.out.println("╠---------------TÌM KIẾM SẢN PHẨM---------------╣");
+            System.out.println("║                                               ║");
+            System.out.println("╠═══════════════════════════════════════════════╣");
+            System.out.println("║ ► [1] Tìm theo ID                             ║");
+            System.out.println("║ ► [2] Tìm theo tên                            ║");
+            System.out.println("║ ► [3] Tìm theo mô tả                          ║");
+            System.out.println("║ ► [4] Tìm theo giá                            ║");
+            System.out.println("║ ► [5] Tìm theo tên                            ║");
+            System.out.println("║ ► [6] Tìm theo Category                       ║");
+            System.out.println("║ ► [0] Quay lại...                             ║");
+            System.out.println("╚═══════════════════════════════════════════════╝");
+            System.out.print("Nhập lựa chọn của bạn: ");
+
             int actionFind = Integer.parseInt(scanner.nextLine());
             switch (actionFind) {
                 case 1:
@@ -295,11 +304,15 @@ public class ProductView {
     }
 
     private void showProducts(List<Product> allProducts) {
-        System.out.printf("%-10s %-15s %-30s %-10s %-20s %20s\n", "ID", "Name", "Description", "Price", "Create at", "Category");
+        System.out.println("+------------+-----------------+--------------------------------+------------+----------------------+----------------------+");
+        System.out.println("|     ID     |      Name       |          Description           |   Price    |      Create at       |   Category           |");
+        System.out.println("+------------+-----------------+--------------------------------+------------+----------------------+----------------------+");
+//        System.out.printf("%-10s %-15s %-30s %-10s %-20s %20s\n", "ID", "Name", "Description", "Price", "Create at", "Category");
         for (Product p : allProducts) {
-            System.out.printf("%-10s %-15s %-30s %-10s %-20s %20s\n", p.getId(), p.getName(), p.getDescription(),
+            System.out.printf("| %-10s | %-15s | %-30s | %-10s | %-20s | %20s |\n", p.getId(), p.getName(), p.getDescription(),
                     p.getPrice(), DateUtils.format(p.getCreateAt()), p.geteCategory());
         }
+        System.out.println("+------------+-----------------+--------------------------------+------------+----------------------+----------------------+");
     }
     private void showCreateProduct() {
         System.out.println("Thêm sản phẩm");

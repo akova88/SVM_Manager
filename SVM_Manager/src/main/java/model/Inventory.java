@@ -100,16 +100,11 @@ public class Inventory implements IModel<Inventory> {
         this.priceSale = priceSale;
     }
     public void updateQuantityImport() {
-        this.quantityProduct = 0;
+        int quantityProduct = 0;
         for (InventoryItems item : inventoryItems) {
-            this.quantityProduct += item.getQuantityPut();
+            quantityProduct += item.getQuantityPut();
         }
-    }
-    public void updateQuantityProductSold() {
-        this.quantitySold = 0;
-        for (InventoryItems inventoryItem : inventoryItems) {
-            this.quantitySold += inventoryItem.getQuantitySold();
-        }
+        this.quantityProduct = quantityProduct;
     }
 
     public void updatePriceImport() {

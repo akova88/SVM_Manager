@@ -17,7 +17,12 @@ public class InventoryService {
     }
 
     public List<Inventory> findAllInventory() {
-        return FileUtils.readFile(path,Inventory.class);
+        List<Inventory> inventories =  FileUtils.readFile(path,Inventory.class);
+        for (Inventory inventory : inventories) {
+            List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventory.getIdInventory());
+            inventory.setInventoryItems(inventoryItemsList);
+        }
+        return inventories;
     }
     public Inventory findInventory(long idInventory) {
         List<Inventory> list = findAllInventory();
@@ -38,6 +43,7 @@ public class InventoryService {
         }
         return result;
     }
+
     public void createInventory(Inventory inventory) {
         List<Inventory> inventories = findAllInventory();
         inventoryItemService.saveInventoryItemByInventory(inventory);
