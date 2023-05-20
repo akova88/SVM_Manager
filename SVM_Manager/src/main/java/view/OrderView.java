@@ -52,7 +52,8 @@ public class OrderView {
         }
     }
 
-    private void createOrder() {
+    public void createOrder() {
+        System.out.println("BẠN ĐANG MUA HÀNG Ở MÁY NÀO?");
         Order order = new Order();
         long idOrder = System.currentTimeMillis() % 1000;
         order.setIdOrder(idOrder);
@@ -66,11 +67,29 @@ public class OrderView {
             showVmToBuy(vendingMachine); // Hiện máy bán hàng để khách chọn mua
 
             Product product = inputIdProduct();
-            System.out.println("Nhập số lượng: ");
-            int quantity = Integer.parseInt(scanner.nextLine());
-//            if (!checkQuantity(vendingMachine, quantity, product)) {
-//                System.out.println("Nhập lại, quá số lượng có trong máy");
-//            }
+            int quantity = 0;
+            boolean check = false;
+            do {
+                System.out.println("Nhập số lượng: ");
+                 quantity = Integer.parseInt(scanner.nextLine());
+                if (!checkQuantity(vendingMachine, quantity, product)) {
+                    System.out.println("Quá số lượng có trong máy");
+                    System.out.println("Chọn 1. Nhập lại");
+                    System.out.println("Chọn 2. Quay lại");
+                    int action = Integer.parseInt(scanner.nextLine());
+                    switch (action) {
+                        case 1:
+                            check = true;
+                            break;
+                        case 2:
+                            check = false;
+                            break;
+                    }
+                } else {
+                    check = false;
+                }
+
+            } while (check);
 
             if (order.getOrderItems() == null) {
                 List<OrderItem> orderItems = new ArrayList<>();
@@ -116,29 +135,38 @@ public class OrderView {
         showOrderBill(idOrder,order);
     }
 
-//    public boolean checkQuantity(VendingMachine vendingMachine, int quantity, Product product) {
-//
-//        List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
-//        List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
-//        for (InventoryItems item : inventoryItemsList) {
-//            if( quantity > (item.getQuantityPut() - item.getQuantitySold()) && item.getIdProduct() == product.getId())
-//                return true;
-//        }
-//        return false;
-//    }
+    public boolean checkQuantity(VendingMachine vendingMachine, int quantity, Product product) {
+
+        List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
+        List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
+        for (InventoryItems item : inventoryItemsList) {
+            if( quantity > (item.getQuantityPut() - item.getQuantitySold()) && item.getIdProduct() == product.getId())
+                return false;
+        }
+        return true;
+    }
 
     private void showVmToBuy(VendingMachine vendingMachine) {
         List<Inventory> inventoryList = inventoryService.findAllInventoryByIdVm(vendingMachine.getIdVm());
         List<InventoryItems> inventoryItemsList = inventoryItemService.findAllByInventoryId(inventoryList.get(0).getIdInventory());
-        System.out.println("VENDING MACHINE " + vendingMachine.getNameVm() + " XIN CHÀO QUÝ KHÁCH");
-        System.out.printf("%-10s%-20s%-10s%-10s\n","ID", "Name", "Quantity", "Price");
+        System.out.println("+------------+----------------------+------------+------------+");
+        System.out.println("|VENDING MACHINE                                              |");
+        System.out.printf("| %-59s |\n",vendingMachine.getNameVm());
+        System.out.println("+------------+----------------------+------------+------------+");
+        System.out.println("|                     XIN CHÀO QUÝ KHÁCH                      |");
+        System.out.println("+------------+----------------------+------------+------------+");
+        System.out.println("|     ID     |         NAME         |  QUANTITY  |    PRICE   |");
+        System.out.println("+------------+----------------------+------------+------------+");
+//        System.out.printf("| %-10s% | -20s% | -10s% | -10s |\n","ID", "Name", "Quantity", "Price");
         for (InventoryItems item : inventoryItemsList) {
             String nameProductShowChoose = productService.findProduct(item.getIdProduct()).getName();
             float priceProductChoose = productService.findProduct(item.getIdProduct()).getPrice();
-            System.out.printf("%-10s%-20s%-10s%-10s\n", item.getIdProduct(), nameProductShowChoose,
+            System.out.printf("| %-10s | %-20s | %10s | %10s |\n", item.getIdProduct(), nameProductShowChoose,
                     item.getQuantityPut()- item.getQuantitySold(),priceProductChoose );
          }
-        System.out.printf("%-10s","PLEASE CHOOSE ID PRODUCT TO BUY\n");
+        System.out.println("+------------+----------------------+------------+------------+");
+        System.out.printf("| %-59s |\n","PLEASE CHOOSE ID PRODUCT TO BUY");
+        System.out.println("+------------+----------------------+------------+------------+");
     }
 
     private boolean checkProductExistOrder(Order order, Product product) {

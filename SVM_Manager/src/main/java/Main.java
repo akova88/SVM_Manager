@@ -1,10 +1,12 @@
 import view.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        LoginView loginView = new LoginView();
+        loginView.launcher();
 
-        AdminView adminView = new AdminView();
-        adminView.launcher();
+//        AdminView adminView = new AdminView();
+//        adminView.launcher();
 //        ProductView shopManager = new ProductView();
 //        shopManager.launch();
 
@@ -16,5 +18,8 @@ public class Main {
 
 //        InventoryView inventoryView = new InventoryView();
 //        inventoryView.launcher();
+//        UserView userView = new UserView();
+//        userView.launcher();
+
     }
 }

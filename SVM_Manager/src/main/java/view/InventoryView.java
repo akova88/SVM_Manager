@@ -61,22 +61,25 @@ public class InventoryView {
         System.out.println("Nhập mã Inventory cần xem:");
         long idInventory = Long.parseLong(scanner.nextLine());
         Inventory inventory = inventoryService.findInventory(idInventory);
-
-        System.out.printf("%-55s%-15s\n", "ID VENDING MACHINE", inventory.getIdVm());
+        System.out.println("+---------------------------------------------------------------------------------+");
+        System.out.printf("| %-61s | %-15s |\n", "ID VENDING MACHINE", inventory.getIdVm());
         VendingMachine vendingMachine = vmService.findVm(inventory.getIdVm());
-        System.out.printf("%-55s%-15s\n", "NAME VENDING MACHINE", vendingMachine.getNameVm());
-        System.out.printf("%-55s%-15s\n", "ID INVENTORY", inventory.getIdInventory());
+        System.out.printf("| %-61s | %-15s |\n", "NAME VENDING MACHINE", vendingMachine.getNameVm());
+        System.out.printf("| %-61s | %-15s |\n", "ID INVENTORY", inventory.getIdInventory());
 //                "%s,%s,%s,%s,%s", this.idInventoryItems, this.idInventory,
 //                        this.idProduct, this.quantityPut, this.quantitySold
-
-        System.out.printf("%-20s%-20s%-15s%-15s\n", "Id Product", "Name", "Quantity_Put", "Quantity_Sold");
+        System.out.println("+----------------------+----------------------+-----------------+-----------------+");
+        System.out.println("|      ID PRODUCT      |         NAME         |   QUANTITY_PUT  |   QUANTITY_SOLD |");
+        System.out.println("+----------------------+----------------------+-----------------+-----------------+");
+//        System.out.printf("%-20s%-20s%-15s%-15s\n", "Id Product", "Name", "Quantity_Put", "Quantity_Sold");
         for (InventoryItems item : inventory.getInventoryItems()) {
             if (item.getIdInventory() == idInventory) {
                 Product p = productService.findProduct(item.getIdProduct());
-                System.out.printf("%-20s%-20s%-15s%-15s\n", p.getId(), p.getName(), item.getQuantityPut(),
+                System.out.printf("| %-20s | %-20s | %15s | %15s |\n", p.getId(), p.getName(), item.getQuantityPut(),
                         item.getQuantitySold());
             }
         }
+        System.out.println("+----------------------+----------------------+-----------------+-----------------+");
     }
 
     private void createInventory() {
@@ -132,8 +135,14 @@ public class InventoryView {
         inventory.updateQuantityImport();
         inventory.setDateImport(new Date());
 
-        // đã tạo ra được 1 inventory mới
-        // Kiểm tra hàng trong máy còn bao nhiêu nếu số lượng nhập vào nhiều hơn thì đưa ra cảnh báo
+//        // đã tạo ra được 1 inventory mới
+//        // Kiểm tra hàng trong máy còn bao nhiêu nếu số lượng nhập vào nhiều hơn thì đưa ra cảnh báo
+//        List<Inventory> inventoryList = inventoryService.findAllInventory();
+//        for (Inventory item : inventoryList) {
+//            if (item.getIdVm() == vendingMachine.getIdVm() && (item.getQuantityProduct() - item.getQuantitySold())) {
+//
+//            }
+//        }
 //        System.out.println(inventory);
 //        if ( inventory.getQuantityProduct() > vendingMachine.getCapacity()- ())
 //        for (InventoryItems item : inventory.getInventoryItems()) {
